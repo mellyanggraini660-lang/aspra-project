@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ASPRA | Production & Custom Tracker</title>
+<style>
+:root{--navy:#172b4d;--blue:#2563eb;--bg:#f4f7fb;--ink:#182230;--muted:#667085;--line:#e5eaf1;--green:#138a58;--amber:#b7791f;--red:#c2413b}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font:14px/1.5 Inter,Segoe UI,Arial,sans-serif;color:var(--ink)}
+header{background:linear-gradient(115deg,#142744,#244b79);color:white;padding:24px max(22px,calc((100% - 1180px)/2))}
+.brand{font-size:12px;letter-spacing:1.8px;font-weight:800;color:#b9d5ff}.head{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}h1{font-size:25px;margin:7px 0 3px}.sub{color:#d7e4f5;margin:0}.public{background:#ffffff1c;border:1px solid #ffffff55;padding:8px 12px;border-radius:9px;color:white}
+main{max-width:1180px;margin:24px auto;padding:0 20px}.notice{background:#fff8e8;border:1px solid #f1d9a6;color:#795416;padding:12px 15px;border-radius:10px;margin-bottom:18px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}.stat,.panel,.project{background:white;border:1px solid var(--line);border-radius:13px;box-shadow:0 3px 12px #102a4308}.stat{padding:16px}.stat small{color:var(--muted)}.num{font-size:26px;font-weight:750;margin-top:5px}
+.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:18px 0}.toolbar input,.toolbar select,.field input,.field select,.field textarea{border:1px solid #d6deea;border-radius:8px;padding:10px 11px;font:inherit;background:white;min-width:0}.toolbar input{flex:1;min-width:180px}.btn{border:0;border-radius:8px;padding:10px 14px;font-weight:650;cursor:pointer}.primary{background:var(--blue);color:white}.secondary{background:#eef3fa;color:#24436b}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.project{padding:17px}.project-top{display:flex;justify-content:space-between;gap:12px}.project h3{margin:0 0 3px;font-size:16px}.muted{color:var(--muted);font-size:12px}.tag{font-size:11px;padding:4px 8px;border-radius:20px;background:#edf3ff;color:#2856a5;white-space:nowrap;height:max-content}.status{font-weight:700;font-size:12px}.status.green{color:var(--green)}.status.amber{color:var(--amber)}.status.red{color:var(--red)}
+.progress-head{display:flex;justify-content:space-between;margin:15px 0 6px;font-size:12px}.track{height:8px;background:#edf0f5;border-radius:20px;overflow:hidden}.fill{height:100%;background:#3478e5;border-radius:20px}.details{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0;color:#475467;font-size:12px}.timeline{border-top:1px solid var(--line);padding-top:12px;margin-top:10px}.step{display:flex;gap:9px;align-items:flex-start;margin:7px 0;font-size:12px}.dot{width:9px;height:9px;border-radius:50%;background:#cbd5e1;margin-top:4px;flex:none}.dot.done{background:#159765}.actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}.actions button{font-size:12px;padding:7px 10px}
+.empty{background:white;border:1px dashed #cbd5e1;padding:28px;text-align:center;border-radius:12px;color:var(--muted);grid-column:1/-1}
+.modal{position:fixed;inset:0;background:#10182899;display:none;align-items:center;justify-content:center;padding:18px;z-index:5}.modal.show{display:flex}.dialog{background:white;border-radius:14px;padding:22px;width:min(560px,100%);max-height:90vh;overflow:auto}.dialog h2{margin:0 0 15px}.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{display:flex;flex-direction:column;gap:5px}.field label{font-size:12px;font-weight:650;color:#475467}.field.full{grid-column:1/-1}.field textarea{min-height:70px}.form-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:17px}
+footer{text-align:center;color:#8a94a6;font-size:11px;padding:28px}
+@media(max-width:760px){.stats{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}.head{align-items:flex-start}.formgrid{grid-template-columns:1fr}.field.full{grid-column:auto}}
+</style>
+</head>
+<body>
+<header><div class="head"><div><div class="brand">ASPRA • DEMO PROJECT</div><h1>Production & Custom Tracker</h1><p class="sub">Pantau progres produksi reguler dan pesanan custom dalam satu dashboard.</p></div><div class="public">◉ Tampilan Demo</div></div></header>
+<main>
+<div class="notice"><b>Catatan dummy:</b> Seluruh nama pelanggan, pesanan, tanggal, dan progres di halaman ini adalah data contoh untuk simulasi presentasi, bukan data produksi aktual.</div>
+<section class="stats">
+ <div class="stat"><small>Total proyek</small><div class="num" id="total">0</div></div>
+ <div class="stat"><small>Dalam proses</small><div class="num" id="active">0</div></div>
+ <div class="stat"><small>Selesai</small><div class="num" id="finished">0</div></div>
+ <div class="stat"><small>Perlu perhatian</small><div class="num" id="late">0</div></div>
+</section>
+<div class="toolbar">
+ <input id="search" placeholder="Cari nama customer, produk, atau nomor proyek..." oninput="render()">
+ <select id="type" onchange="render()"><option value="">Semua jenis</option><option>Produksi Reguler</option><option>Custom</option></select>
+ <select id="statusFilter" onchange="render()"><option value="">Semua status</option><option>Menunggu</option><option>Proses</option><option>Selesai</option><option>Terlambat</option></select>
+ <button class="btn primary" onclick="openModal()">+ Tambah Proyek</button>
+</div>
+<div class="grid" id="projects"></div>
+</main>
+<footer>Prototype internal • Versi demonstrasi 1.0 • Data dapat diubah pada browser ini</footer>
+<div class="modal" id="modal"><div class="dialog">
+<h2>Tambah proyek baru</h2>
+<form id="projectForm"><div class="formgrid">
+<div class="field"><label>Nama customer</label><input name="customer" required placeholder="Contoh: PT Maju Bersama"></div>
+<div class="field"><label>Jenis proyek</label><select name="type"><option>Produksi Reguler</option><option>Custom</option></select></div>
+<div class="field"><label>Nama produk</label><input name="product" required placeholder="Contoh: Botol PET 250 ml"></div>
+<div class="field"><label>Jumlah pesanan</label><input name="qty" required placeholder="Contoh: 10.000 pcs"></div>
+<div class="field"><label>Tanggal mulai</label><input type="date" name="start" required></div>
+<div class="field"><label>Target selesai</label><input type="date" name="target" required></div>
+<div class="field full"><label>Catatan</label><textarea name="note" placeholder="Spesifikasi, warna, label, atau catatan lain"></textarea></div>
+</div><div class="form-actions"><button type="button" class="btn secondary" onclick="closeModal()">Batal</button><button class="btn primary">Simpan proyek</button></div></form>
+</div></div>
+<script>
+const seed=[
+{id:'ASP-001',customer:'PT Segar Abadi',type:'Produksi Reguler',product:'Botol PET 250 ml',qty:'12.000 pcs',start:'2026-11-03',target:'2026-11-28',progress:65,status:'Proses',note:'Produksi berjalan sesuai tahapan.',steps:[['Konfirmasi pesanan',true],['Penjadwalan produksi',true],['Proses produksi',true],['Quality control',false],['Pengiriman',false]]},
+{id:'ASP-002',customer:'Kopi Sudut Kota',type:'Custom',product:'Botol Detox 250 ml + sablon',qty:'5.000 pcs',start:'2026-11-05',target:'2026-12-05',progress:35,status:'Proses',note:'Menunggu persetujuan final desain sablon.',steps:[['Brief dan spesifikasi',true],['Pembuatan desain',true],['Approval sample/desain',false],['Produksi custom',false],['Quality control & pengiriman',false]]},
+{id:'ASP-003',customer:'CV Berkah Pangan',type:'Produksi Reguler',product:'Jerigen 5 liter',qty:'2.000 pcs',start:'2026-10-28',target:'2026-11-18',progress:80,status:'Terlambat',note:'Target perlu dikonfirmasi ulang oleh tim produksi.',steps:[['Konfirmasi pesanan',true],['Penjadwalan produksi',true],['Proses produksi',true],['Quality control',false],['Pengiriman',false]]},
+{id:'ASP-004',customer:'PT Natura Care',type:'Custom',product:'Botol spray 100 ml',qty:'3.000 pcs',start:'2026-10-20',target:'2026-11-15',progress:100,status:'Selesai',note:'Pesanan selesai dan siap diserahterimakan.',steps:[['Brief dan spesifikasi',true],['Pembuatan desain',true],['Approval sample/desain',true],['Produksi custom',true],['Quality control & pengiriman',true]]},
+{id:'ASP-005',customer:'Depot Air Tirta',type:'Produksi Reguler',product:'Galon 5 liter',qty:'1.500 pcs',start:'2026-11-20',target:'2026-12-10',progress:10,status:'Menunggu',note:'Menunggu slot jadwal produksi terkonfirmasi.',steps:[['Konfirmasi pesanan',true],['Penjadwalan produksi',false],['Proses produksi',false],['Quality control',false],['Pengiriman',false]]}
+];
+let projects=JSON.parse(localStorage.getItem('aspraDemoProjects')||'null')||seed;
+function save(){localStorage.setItem('aspraDemoProjects',JSON.stringify(projects))}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function render(){
+ const q=document.getElementById('search').value.toLowerCase(),type=document.getElementById('type').value,st=document.getElementById('statusFilter').value;
+ document.getElementById('total').textContent=projects.length;
+ document.getElementById('active').textContent=projects.filter(p=>p.status==='Proses'||p.status==='Menunggu').length;
+ document.getElementById('finished').textContent=projects.filter(p=>p.status==='Selesai').length;
+ document.getElementById('late').textContent=projects.filter(p=>p.status==='Terlambat').length;
+ let list=projects.filter(p=>(!q||[p.id,p.customer,p.product].join(' ').toLowerCase().includes(q))&&(!type||p.type===type)&&(!st||p.status===st));
+ document.getElementById('projects').innerHTML=list.length?list.map(p=>`<article class="project">
+ <div class="project-top"><div><h3>${esc(p.product)}</h3><div class="muted">${esc(p.id)} • ${esc(p.customer)}</div></div><span class="tag">${esc(p.type)}</span></div>
+ <div class="details"><div>Jumlah pesanan<br><b>${esc(p.qty)}</b></div><div>Target selesai<br><b>${esc(p.target)}</b></div></div>
+ <div class="progress-head"><span>Progres pengerjaan</span><b>${p.progress}%</b></div><div class="track"><div class="fill" style="width:${p.progress}%"></div></div>
+ <div style="margin-top:10px" class="status ${p.status==='Selesai'?'green':p.status==='Terlambat'?'red':'amber'}">● ${esc(p.status)}</div>
+ <div class="timeline">${p.steps.map((s,i)=>`<div class="step"><span class="dot ${s[1]?'done':''}"></span><span>${esc(s[0])}${s[1]?' — selesai':''}</span></div>`).join('')}</div>
+ <div class="muted" style="margin-top:10px">Catatan: ${esc(p.note||'-')}</div>
+ <div class="actions"><button class="btn secondary" onclick="advance('${p.id}')">Perbarui progres</button><button class="btn secondary" onclick="editStatus('${p.id}')">Ubah status</button></div>
+ </article>`).join(''):'<div class="empty">Tidak ada proyek yang sesuai dengan pencarian.</div>';
+}
+function advance(id){let p=projects.find(x=>x.id===id);if(!p)return;if(p.progress>=100){alert('Proyek sudah 100%.');return}p.progress=Math.min(100,p.progress+20);let done=Math.ceil(p.progress/20);p.steps.forEach((s,i)=>s[1]=i<done);p.status=p.progress===100?'Selesai':'Proses';save();render()}
+function editStatus(id){let p=projects.find(x=>x.id===id);let v=prompt('Masukkan status: Menunggu, Proses, Selesai, atau Terlambat',p.status);if(v&&['Menunggu','Proses','Selesai','Terlambat'].includes(v)){p.status=v;if(v==='Selesai'){p.progress=100;p.steps.forEach(s=>s[1]=true)}save();render()}else if(v)alert('Status tidak dikenali.')}
+function openModal(){document.getElementById('modal').classList.add('show')}
+function closeModal(){document.getElementById('modal').classList.remove('show')}
+document.getElementById('projectForm').addEventListener('submit',e=>{e.preventDefault();let d=Object.fromEntries(new FormData(e.target));let n=projects.length+1;projects.unshift({id:'ASP-'+String(n).padStart(3,'0'),customer:d.customer,type:d.type,product:d.product,qty:d.qty,start:d.start,target:d.target,progress:0,status:'Menunggu',note:d.note||'Belum ada catatan.',steps:(d.type==='Custom'?['Brief dan spesifikasi','Pembuatan desain','Approval sample/desain','Produksi custom','Quality control & pengiriman']:['Konfirmasi pesanan','Penjadwalan produksi','Proses produksi','Quality control','Pengiriman']).map(x=>[x,false])});save();e.target.reset();closeModal();render()});
+render();
+</script>
+</body></html>
